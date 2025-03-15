@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Loop Player</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="input-section">
+            <input type="text" id="videoUrl" placeholder="YouTube URLを入力">
+            <button id="loadButton">動画を読み込む</button>
+        </div>
+        
+        <div class="player-section">
+            <div id="player"></div>
+        </div>
+        
+        <div class="controls-section">
+            <button id="setPointA">A点を設定</button>
+            <button id="setPointB">B点を設定</button>
+            <button id="startLoop">ループ開始</button>
+            <button id="stopLoop">ループ停止</button>
+        </div>
+        
+        <div class="info-section">
+            <p>A点: <span id="pointA">未設定</span></p>
+            <p>B点: <span id="pointB">未設定</span></p>
+        </div>
+    </div>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="script.js"></script>
+</body>
+</html>
