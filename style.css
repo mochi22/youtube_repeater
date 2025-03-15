@@ -41,9 +41,12 @@ button:hover {
     background-color: #0056b3;
 }
 
+/* プレーヤーセクションの調整 */
 .player-section {
     position: relative;
     width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
     padding-bottom: 56.25%; /* 16:9 アスペクト比 */
 }
 
@@ -72,6 +75,13 @@ button:hover {
 @media (max-width: 600px) {
     .container {
         padding: 10px;
+        margin: 10px auto;
+    }
+    
+    .player-section {
+        width: 100%;
+        max-width: 100%;
+        padding-bottom: 56.25%; /* 16:9 アスペクト比を維持 */
     }
     
     #videoUrl {
@@ -81,5 +91,22 @@ button:hover {
     
     button {
         width: calc(50% - 10px);
+        font-size: 14px;
+        padding: 8px 15px;
+    }
+
+    .info-section {
+        font-size: 14px;
+    }
+}
+
+/* タブレット向けのスタイル */
+@media (min-width: 601px) and (max-width: 1024px) {
+    .container {
+        max-width: 90%;
+    }
+    
+    .player-section {
+        max-width: 90%;
     }
 }
