@@ -110,3 +110,24 @@ button:hover {
         max-width: 90%;
     }
 }
+
+.playback-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+    width: 100%;
+}
+
+/* Font Awesome のアイコン用 */
+.fas {
+    margin-right: 5px;
+}
+
+/* スマートフォン向けの調整 */
+@media (max-width: 600px) {
+    .playback-controls button {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+}
