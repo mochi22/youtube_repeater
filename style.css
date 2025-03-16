@@ -41,13 +41,12 @@ button:hover {
     background-color: #0056b3;
 }
 
-/* プレーヤーセクションの調整 */
 .player-section {
     position: relative;
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
-    padding-bottom: 56.25%; /* 16:9 アスペクト比 */
+    padding-bottom: 56.25%;
 }
 
 #player {
@@ -71,65 +70,12 @@ button:hover {
     margin-top: 20px;
 }
 
-/* スマートフォン向けのスタイル */
-@media (max-width: 600px) {
-    .container {
-        padding: 10px;
-        margin: 10px auto;
-    }
-    
-    .player-section {
-        width: 100%;
-        max-width: 100%;
-        padding-bottom: 56.25%; /* 16:9 アスペクト比を維持 */
-    }
-    
-    #videoUrl {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-    
-    button {
-        width: calc(50% - 10px);
-        font-size: 14px;
-        padding: 8px 15px;
-    }
-
-    .info-section {
-        font-size: 14px;
-    }
-}
-
-/* タブレット向けのスタイル */
-@media (min-width: 601px) and (max-width: 1024px) {
-    .container {
-        max-width: 90%;
-    }
-    
-    .player-section {
-        max-width: 90%;
-    }
-}
-
 .playback-controls {
     display: flex;
     justify-content: center;
     gap: 10px;
     margin-top: 10px;
     width: 100%;
-}
-
-/* Font Awesome のアイコン用 */
-.fas {
-    margin-right: 5px;
-}
-
-/* スマートフォン向けの調整 */
-@media (max-width: 600px) {
-    .playback-controls button {
-        font-size: 12px;
-        padding: 8px 12px;
-    }
 }
 
 .caption-section {
@@ -144,9 +90,7 @@ button:hover {
     border-radius: 5px;
     margin-bottom: 10px;
     min-height: 50px;
-    display: none; /* 初期状態は非表示 */
 }
-
 
 .caption-controls {
     display: flex;
@@ -166,11 +110,54 @@ button:hover {
     line-height: 1.4;
 }
 
-/* スマートフォン向けの調整 */
 @media (max-width: 600px) {
+    .container {
+        padding: 10px;
+        margin: 10px auto;
+    }
+    
+    .player-section {
+        width: 100%;
+        max-width: 100%;
+        padding-bottom: 56.25%;
+    }
+    
+    #videoUrl {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    button {
+        width: calc(50% - 10px);
+        font-size: 14px;
+        padding: 8px 15px;
+    }
+
+    .info-section {
+        font-size: 14px;
+    }
+    
+    .playback-controls button {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+    
     .caption-container {
         font-size: 14px;
         padding: 8px;
     }
 }
 
+@media (min-width: 601px) and (max-width: 1024px) {
+    .container {
+        max-width: 90%;
+    }
+    
+    .player-section {
+        max-width: 90%;
+    }
+}
+
+.fas {
+    margin-right: 5px;
+}
