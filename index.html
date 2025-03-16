@@ -23,8 +23,6 @@
             <button id="setPointB">B点を設定</button>
             <button id="startLoop">ループ開始</button>
             <button id="stopLoop">ループ停止</button>
-            
-            <!-- 新しい再生コントロール -->
             <div class="playback-controls">
                 <button id="rewind5"><i class="fas fa-backward"></i> -5秒</button>
                 <button id="playPause"><i class="fas fa-play"></i> 再生/停止</button>
@@ -32,7 +30,14 @@
             </div>
 
         </div>
-        
+        <!-- caption -->
+        <div class="caption-section">
+            <div class="caption-container">
+                <div id="captionText">字幕がここに表示されます</div>
+            </div>
+            <button id="toggleCaption">字幕の表示/非表示</button>
+        </div>
+
         <div class="info-section">
             <p>A点: <span id="pointA">未設定</span></p>
             <p>B点: <span id="pointB">未設定</span></p>

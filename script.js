@@ -2,20 +2,22 @@ let player;
 let pointA = null;
 let pointB = null;
 let isLooping = false;
-// グローバル変数として追加
 let isPlaying = false;
+let captionsEnabled = false;
+
 
 // YouTube IFrame Player API の準備
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
-        height: '160',
-        width: '300',
         videoId: '',
         playerVars: {
-            'playsinline': 1
+            'playsinline': 1,
+            'cc_load_policy': 1,  // 字幕を有効化
+            'cc_lang_pref': 'en'  // 優先言語をenglishに設定
         },
         events: {
-            'onStateChange': onPlayerStateChange
+            'onStateChange': onPlayerStateChange,
+            'onReady': onPlayerReady
         }
     });
 }
@@ -70,6 +72,7 @@ document.getElementById('stopLoop').addEventListener('click', () => {
 function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.PLAYING) {
         checkLoop();
+        updateCaption();
     }
 }
 
@@ -121,5 +124,47 @@ function onPlayerStateChange(event) {
     } else if (event.data === YT.PlayerState.PAUSED) {
         isPlaying = false;
         document.getElementById('playPause').innerHTML = '<i class="fas fa-play"></i> 再生';
+    }
+}
+
+
+
+// 字幕の表示/非表示切り替え
+document.getElementById('toggleCaption').addEventListener('click', () => {
+    const captionContainer = document.querySelector('.caption-container');
+    if (captionContainer.style.display === 'none') {
+        captionContainer.style.display = 'block';
+        captionsEnabled = true;
+    } else {
+        captionContainer.style.display = 'none';
+        captionsEnabled = false;
+    }
+});
+
+// 字幕の更新を定期的にチェック
+function updateCaption() {
+    if (!captionsEnabled) return;
+
+    const currentTime = player.getCurrentTime();
+    const track = player.getOption('captions', 'tracklist');
+    
+    if (track && track.length > 0) {
+        // 現在の時間に合わせて字幕を取得
+        const captions = player.getOption('captions', 'getCaptions');
+        if (captions) {
+            document.getElementById('captionText').textContent = captions;
+        }
+    }
+
+    // 100ミリ秒ごとに更新
+    setTimeout(updateCaption, 100);
+}
+
+// プレーヤーの準備完了時
+function onPlayerReady(event) {
+    // 字幕トラックが利用可能か確認
+    const tracks = player.getOption('captions', 'tracklist');
+    if (!tracks || tracks.length === 0) {
+        document.getElementById('captionText').textContent = 'この動画には字幕がありません';
     }
 }
