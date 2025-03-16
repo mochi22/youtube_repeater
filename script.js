@@ -129,13 +129,58 @@ document.getElementById('forward5').addEventListener('click', () => {
 
 // プレーヤーの状態変更時のコールバックを更新
 function onPlayerStateChange(event) {
+    // 既存のコード
     if (event.data === YT.PlayerState.PLAYING) {
         isPlaying = true;
         document.getElementById('playPause').innerHTML = '<i class="fas fa-pause"></i> 停止';
+        if (captionsEnabled) {
+            updateCaption();
+        }
         checkLoop();
+
+        // 再生開始時の追加処理
+        updateTimeDisplay(); // 現在の再生時間を表示
     } else if (event.data === YT.PlayerState.PAUSED) {
         isPlaying = false;
         document.getElementById('playPause').innerHTML = '<i class="fas fa-play"></i> 再生';
+    } else if (event.data === YT.PlayerState.ENDED) {
+        // 動画終了時の処理
+        isPlaying = false;
+        document.getElementById('playPause').innerHTML = '<i class="fas fa-play"></i> 再生';
+        if (isLooping) {
+            player.seekTo(pointA);
+            player.playVideo();
+        }
+    } else if (event.data === YT.PlayerState.BUFFERING) {
+        // バッファリング中の処理
+        console.log('動画をバッファリング中...');
+    } else if (event.data === YT.PlayerState.CUED) {
+        // 動画がキューされた時の処理
+        console.log('新しい動画がキューされました');
+    }
+
+    // ループ機能の処理
+    if (isLooping && event.data === YT.PlayerState.PLAYING) {
+        const currentTime = player.getCurrentTime();
+        if (currentTime >= pointB) {
+            player.seekTo(pointA);
+        }
+    }
+
+    // エラーハンドリング
+    if (event.data === YT.PlayerState.UNSTARTED) {
+        console.log('動画の読み込みに問題が発生しました');
+    }
+}
+
+// 現在の再生時間を表示する補助関数
+function updateTimeDisplay() {
+    if (isPlaying) {
+        const currentTime = player.getCurrentTime();
+        const duration = player.getDuration();
+        // 時間表示の更新処理をここに追加
+        
+        setTimeout(updateTimeDisplay, 1000); // 1秒ごとに更新
     }
 }
 
