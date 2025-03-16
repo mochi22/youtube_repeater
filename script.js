@@ -15,7 +15,8 @@ function onYouTubeIframeAPIReady() {
             'cc_lang_pref': 'en',
             'origin': window.location.origin,  // この行を追加
             'enablejsapi': 1,                 // この行を追加
-            'widget_referrer': window.location.href  // この行を追加
+            'widget_referrer': window.location.href,  // この行を追加
+            'cors': 'anonymous'
         },
         events: {
             'onReady': onPlayerReady,
