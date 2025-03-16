@@ -44,8 +44,33 @@ document.getElementById('loadButton').addEventListener('click', () => {
 
 function onPlayerReady(event) {
     console.log('Player is ready');
-    setTimeout(initializeCaptions, 1000);
+    
+    // 字幕の初期化を試みる
+    let attempts = 0;
+    const maxAttempts = 5;
+    
+    function tryInitializeCaptions() {
+        if (attempts >= maxAttempts) {
+            console.error('Failed to initialize captions after multiple attempts');
+            return;
+        }
+        
+        try {
+            initializeCaptions();
+            if (!player.getOptions('captions')) {
+                attempts++;
+                setTimeout(tryInitializeCaptions, 1000);
+            }
+        } catch (error) {
+            console.error('Error in caption initialization:', error);
+            attempts++;
+            setTimeout(tryInitializeCaptions, 1000);
+        }
+    }
+    
+    tryInitializeCaptions();
 }
+
 
 function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.PLAYING) {
@@ -66,21 +91,26 @@ function onApiChange() {
 
 function initializeCaptions() {
     try {
-        const tracks = player.getAvailableQualityLevels();
-        player.loadModule('captions');
+        const tracks = player.getOptions('captions');
+        if (!tracks) {
+            console.log('Captions not available yet');
+            return;
+        }
+
         const trackList = player.getOption('captions', 'tracklist');
+        const languageSelect = document.getElementById('captionLanguage');
+        languageSelect.innerHTML = '';
         
         if (trackList && trackList.length > 0) {
-            const languageSelect = document.getElementById('captionLanguage');
-            languageSelect.innerHTML = '';
-            
             trackList.forEach(track => {
                 const option = document.createElement('option');
                 option.value = track.languageCode;
-                option.textContent = track.languageName;
+                option.textContent = `${track.languageName} (${track.languageCode})`;
                 languageSelect.appendChild(option);
             });
             
+            // デフォルトで英語の字幕を選択
+            player.setOption('captions', 'track', {'languageCode': 'en'});
             document.querySelector('.caption-container').style.display = 'block';
         }
     } catch (error) {
@@ -89,17 +119,33 @@ function initializeCaptions() {
 }
 
 function updateCaptions() {
-    if (player && player.getOptions().includes('captions')) {
-        const currentCaption = player.getCurrentTime();
-        const captions = player.getOption('captions', 'getCaptions');
-        if (captions) {
-            document.getElementById('captionText').textContent = captions;
-        }
+    if (!player || !player.getOptions || !player.getOptions('captions')) {
+        return;
     }
-    if (isPlaying) {
-        requestAnimationFrame(updateCaptions);
+
+    try {
+        const currentTime = player.getCurrentTime();
+        const captions = player.getOption('captions', 'tracklist');
+        
+        if (captions) {
+            // 現在の時間に対応する字幕を表示
+            const currentCaption = captions.find(caption => 
+                currentTime >= caption.start && currentTime <= caption.end
+            );
+            
+            if (currentCaption) {
+                document.getElementById('captionText').textContent = currentCaption.text;
+            }
+        }
+        
+        if (isPlaying) {
+            requestAnimationFrame(updateCaptions);
+        }
+    } catch (error) {
+        console.error('Error updating captions:', error);
     }
 }
+
 
 document.getElementById('setPointA').addEventListener('click', () => {
     pointA = player.getCurrentTime();
@@ -164,5 +210,23 @@ document.getElementById('toggleCaption').addEventListener('click', () => {
 });
 
 document.getElementById('captionLanguage').addEventListener('change', (e) => {
-    player.setOption('captions', 'track', {'languageCode': e.target.value});
+    try {
+        player.setOption('captions', 'track', {
+            'languageCode': e.target.value
+        });
+        
+        // 字幕の表示を強制的に有効化
+        player.setOption('captions', 'reload', true);
+    } catch (error) {
+        console.error('Error changing caption language:', error);
+    }
 });
+
+
+function checkPlayerReady() {
+    if (!player || typeof player.getOptions !== 'function') {
+        console.error('Player not properly initialized');
+        return false;
+    }
+    return true;
+}
