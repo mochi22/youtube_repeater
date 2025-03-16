@@ -12,7 +12,10 @@ function onYouTubeIframeAPIReady() {
         playerVars: {
             'playsinline': 1,
             'cc_load_policy': 1,
-            'cc_lang_pref': 'ja'
+            'cc_lang_pref': 'en',
+            'origin': window.location.origin,  // この行を追加
+            'enablejsapi': 1,                 // この行を追加
+            'widget_referrer': window.location.href  // この行を追加
         },
         events: {
             'onReady': onPlayerReady,
