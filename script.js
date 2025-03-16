@@ -29,12 +29,24 @@ function extractVideoID(url) {
     return (match && match[7].length == 11) ? match[7] : false;
 }
 
-// 動画読み込みボタンのイベントリスナー
+// 動画URLを読み込む際の処理を更新
 document.getElementById('loadButton').addEventListener('click', () => {
     const url = document.getElementById('videoUrl').value;
     const videoId = extractVideoID(url);
     if (videoId) {
-        player.loadVideoById(videoId);
+        player.loadVideoById({
+            'videoId': videoId,
+            'startSeconds': 0,
+            'suggestedQuality': 'large'
+        });
+        
+        // 字幕の設定をリセット
+        setTimeout(() => {
+            if (captionsEnabled) {
+                player.loadModule('captions');
+                player.setOption('captions', 'track', {'languageCode': currentLanguage});
+            }
+        }, 1000);
     } else {
         alert('有効なYouTube URLを入力してください。');
     }
@@ -69,12 +81,12 @@ document.getElementById('stopLoop').addEventListener('click', () => {
 });
 
 // プレーヤーの状態変更時のコールバック
-function onPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.PLAYING) {
-        checkLoop();
-        updateCaption();
-    }
-}
+// function onPlayerStateChange(event) {
+//     if (event.data === YT.PlayerState.PLAYING) {
+//         checkLoop();
+//         updateCaption();
+//     }
+// }
 
 // ループのチェック
 function checkLoop() {
@@ -128,6 +140,11 @@ function onPlayerStateChange(event) {
 }
 
 
+// 字幕の言語変更
+document.getElementById('captionLanguage').addEventListener('change', (e) => {
+    currentLanguage = e.target.value;
+    player.setOption('captions', 'track', {'languageCode': currentLanguage});
+});
 
 // 字幕の表示/非表示切り替え
 document.getElementById('toggleCaption').addEventListener('click', () => {
@@ -135,36 +152,59 @@ document.getElementById('toggleCaption').addEventListener('click', () => {
     if (captionContainer.style.display === 'none') {
         captionContainer.style.display = 'block';
         captionsEnabled = true;
+        // 字幕を有効化
+        player.loadModule('captions');
+        player.setOption('captions', 'track', {'languageCode': currentLanguage});
     } else {
         captionContainer.style.display = 'none';
         captionsEnabled = false;
+        // 字幕を無効化
+        player.unloadModule('captions');
     }
 });
 
-// 字幕の更新を定期的にチェック
+// プレーヤーの準備完了時
+// 動画読み込み時に字幕トラックを確認
+function onPlayerReady(event) {
+    // 利用可能な字幕トラックを取得
+    player.loadModule('captions');
+    setTimeout(() => {
+        const tracks = player.getOption('captions', 'tracklist');
+        console.log('Available caption tracks:', tracks);
+        
+        if (!tracks || tracks.length === 0) {
+            document.getElementById('captionText').textContent = 'No captions available for this video';
+            return;
+        }
+
+        // 利用可能な言語を選択肢に追加
+        const languageSelect = document.getElementById('captionLanguage');
+        languageSelect.innerHTML = ''; // 既存のオプションをクリア
+        
+        tracks.forEach(track => {
+            const option = document.createElement('option');
+            option.value = track.languageCode;
+            option.textContent = track.languageName;
+            languageSelect.appendChild(option);
+        });
+    }, 1000); // YouTubeプレーヤーの初期化を待つ
+}
+
 function updateCaption() {
     if (!captionsEnabled) return;
 
-    const currentTime = player.getCurrentTime();
-    const track = player.getOption('captions', 'tracklist');
-    
-    if (track && track.length > 0) {
-        // 現在の時間に合わせて字幕を取得
+    try {
+        const currentTime = player.getCurrentTime();
         const captions = player.getOption('captions', 'getCaptions');
+        
         if (captions) {
             document.getElementById('captionText').textContent = captions;
         }
+    } catch (error) {
+        console.error('Error updating captions:', error);
     }
 
     // 100ミリ秒ごとに更新
     setTimeout(updateCaption, 100);
 }
 
-// プレーヤーの準備完了時
-function onPlayerReady(event) {
-    // 字幕トラックが利用可能か確認
-    const tracks = player.getOption('captions', 'tracklist');
-    if (!tracks || tracks.length === 0) {
-        document.getElementById('captionText').textContent = 'この動画には字幕がありません';
-    }
-}

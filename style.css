@@ -147,6 +147,20 @@ button:hover {
     display: none; /* 初期状態は非表示 */
 }
 
+
+.caption-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+#captionLanguage {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
 #captionText {
     font-size: 16px;
     line-height: 1.4;
@@ -159,3 +173,4 @@ button:hover {
         padding: 8px;
     }
 }
+
